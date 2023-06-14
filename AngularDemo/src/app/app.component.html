@@ -1,0 +1,61 @@
+<div class="ms-4 d-flex gap-3">
+    <div class="d-flex flex-column gap-3">
+        <button
+            (click)="handleDrawHandClick()"
+            type="button"
+            class="btn btn-primary"
+        >
+            Hand
+        </button>
+        <button
+            (click)="handleDrawMarkerClick()"
+            type="button"
+            class="btn btn-secondary"
+        >
+            Add a Marker
+        </button>
+        <button
+            (click)="handleDrawCircleClick()"
+            type="button"
+            class="btn btn-primary"
+        >
+            Draw a Circle
+        </button>
+        <button
+            (click)="handleDrawShapeClick()"
+            type="button"
+            class="btn btn btn-info"
+        >
+            Draw a Shape
+        </button>
+        <button
+            (click)="handleDrawLineClick()"
+            type="button"
+            class="btn btn btn-dark"
+        >
+            Draw a Line
+        </button>
+        <button
+            (click)="handleDrawRectangleClick()"
+            type="button"
+            class="btn btn-dark"
+        >
+            Draw a Rectangle
+        </button>
+        <button
+            (click)="handleClearCircleClick()"
+            type="button"
+            class="btn btn-dark"
+        >
+            Clear Circle
+        </button>
+        <button
+            (click)="handleShowBlueMarkers()"
+            type="button"
+            class="btn btn-dark"
+        >
+            Show current markers
+        </button>
+    </div>
+    <div id="map"></div>
+</div>
