@@ -1,61 +1,103 @@
 <div class="ms-4 d-flex gap-3">
     <div class="d-flex flex-column gap-3">
-        <button
+        <div
+            class="menu-item d-flex align-items-center gap-2 ms-2"
             (click)="handleDrawHandClick()"
-            type="button"
-            class="btn btn-primary"
         >
-            Hand
-        </button>
-        <button
-            (click)="handleDrawMarkerClick()"
-            type="button"
-            class="btn btn-secondary"
-        >
-            Add a Marker
-        </button>
-        <button
-            (click)="handleDrawCircleClick()"
-            type="button"
-            class="btn btn-primary"
-        >
-            Draw a Circle
-        </button>
-        <button
-            (click)="handleDrawShapeClick()"
-            type="button"
-            class="btn btn btn-info"
-        >
-            Draw a Shape
-        </button>
-        <button
-            (click)="handleDrawLineClick()"
-            type="button"
-            class="btn btn btn-dark"
-        >
-            Draw a Line
-        </button>
-        <button
-            (click)="handleDrawRectangleClick()"
-            type="button"
-            class="btn btn-dark"
-        >
-            Draw a Rectangle
-        </button>
-        <button
-            (click)="handleClearCircleClick()"
-            type="button"
-            class="btn btn-dark"
-        >
-            Clear Circle
-        </button>
-        <button
-            (click)="handleShowBlueMarkers()"
-            type="button"
-            class="btn btn-dark"
-        >
-            Show current markers
-        </button>
+            <span class="oval-yellow"></span>
+            <span>Hand</span>
+        </div>
+        <div class="dropdown d-flex align-items-center">
+            <img
+                width="20"
+                height="20"
+                src="https://img.icons8.com/external-flat-andi-nur-abdillah/20/external-Option-survey-(flat)-flat-andi-nur-abdillah.png"
+                alt="shapes icon"
+            />
+            <a
+                class="dropdown-toggle text-decoration-none ms-2"
+                data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
+                aria-expanded="false"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                Shapes
+            </a>
+
+            <ul class="dropdown-menu">
+                <div
+                    class="menu-item d-flex align-items-center gap-2 ms-2"
+                    (click)="handleDrawMarkerClick()"
+                >
+                    <span class="oval"></span>
+                    <span>Markers</span>
+                </div>
+                <div
+                    class="menu-item d-flex align-items-center gap-2 ms-2"
+                    (click)="handleDrawCircleClick()"
+                >
+                    <span class="oval-yellow"></span>
+                    <span>Circles</span>
+                </div>
+                <div
+                    class="menu-item d-flex align-items-center gap-2 ms-2"
+                    (click)="handleDrawShapeClick()"
+                >
+                    <span class="oval-lime"></span>
+                    <span>Polygon</span>
+                </div>
+                <div
+                    class="menu-item d-flex align-items-center gap-2 ms-2"
+                    (click)="handleDrawLineClick()"
+                >
+                    <span class="oval-teal"></span>
+                    <span>Polyline</span>
+                </div>
+                <div
+                    class="menu-item d-flex align-items-center gap-2 ms-2"
+                    (click)="handleDrawRectangleClick()"
+                >
+                    <span class="oval-purple"></span>
+                    <span>Rectangle</span>
+                </div>
+            </ul>
+        </div>
+        <div class="dropdown d-flex align-items-center">
+            <img
+                width="20"
+                height="20"
+                src="https://img.icons8.com/external-kmg-design-outline-color-kmg-design/20/external-option-ui-essential-kmg-design-outline-color-kmg-design.png"
+                alt="options icon"
+            />
+            <a
+                class="dropdown-toggle text-decoration-none ms-2"
+                data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
+                aria-expanded="false"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                Options
+            </a>
+
+            <ul class="dropdown-menu">
+                <div class="d-flex align-items-center gap-2 ms-2">
+                    <div class="checkbox-wrapper-3">
+                        <input
+                            (change)="handleWaterCheckBox($event)"
+                            type="checkbox"
+                            id="cbx-3"
+                            class="waterCheckbox"
+                        />
+                        <label for="cbx-3" class="toggle"><span></span></label>
+                    </div>
+                    <span>Detect Water</span>
+                </div>
+            </ul>
+        </div>
     </div>
     <div id="map"></div>
 </div>
