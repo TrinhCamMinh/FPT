@@ -153,6 +153,25 @@ export class AppComponent implements OnInit {
 		});
 	};
 
+	private iniRightSideBar = (name: string) => {
+		const markerName = document.querySelector('.marker-name');
+		const rightSidebar = document.querySelector('.right-sidebar-container');
+		if (markerName) {
+			markerName.innerHTML = name;
+			(rightSidebar as HTMLElement).style.display = 'flex';
+		}
+
+		//close sidebar
+		const closeBtn = document.querySelector('.close-btn');
+		const rightSideBar = document.querySelector('.right-sidebar-container');
+
+		if (closeBtn && rightSideBar) {
+			closeBtn.addEventListener('click', () => {
+				(rightSideBar as HTMLElement).style.display = 'none';
+			});
+		}
+	};
+
 	async readFile(fileURL: any = 'assets/Demo.csv', type: any = null) {
 		const data = await this.http
 			.get(fileURL, { responseType: 'text' })
@@ -341,6 +360,8 @@ export class AppComponent implements OnInit {
 			}
 		}
 
+		const demo = this.iniRightSideBar;
+
 		this.drawingManager.setDrawingMode(
 			google.maps.drawing.OverlayType.MARKER
 		);
@@ -411,6 +432,10 @@ export class AppComponent implements OnInit {
 						}
 					});
 				}
+
+				marker.addListener('click', () => {
+					demo('MINHCT');
+				});
 
 				marker.addListener('rightclick', () => {
 					if (currentInfoWindow) {

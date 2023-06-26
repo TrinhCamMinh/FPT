@@ -2,8 +2,8 @@
 	<div>
 		<aside class="sidebar-container">
 			<div class="sidebar-heading">
-				<p class="active">ADSL</p>
-				<p>FFTH</p>
+				<p class="active" (click)="handleDrawMarkerClick()">ADSL</p>
+				<p (click)="handleDrawHandClick()">FFTH</p>
 				<p>PON</p>
 				<p>CATV</p>
 			</div>
@@ -152,4 +152,84 @@
 		</aside>
 	</div>
 	<div id="map"></div>
+	<div class="right-sidebar-container">
+		<div class="right-sidebar-heading">
+			<h4>Search Facilities</h4>
+			<span class="minimize-close-btn-group">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					height="1.25em"
+					viewBox="0 0 448 512"
+				>
+					<style>
+						svg {
+							fill: #fafafa;
+						}
+					</style>
+					<path
+						d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+					/>
+				</svg>
+				<svg
+					class="close-btn"
+					xmlns="http://www.w3.org/2000/svg"
+					height="1.25em"
+					viewBox="0 0 384 512"
+				>
+					<style>
+						svg {
+							fill: #ffffff;
+						}
+					</style>
+					<path
+						d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+					/>
+				</svg>
+			</span>
+		</div>
+		<div class="right-sidebar-content-container">
+			<div class="right-sidebar-secton">
+				<h4>Product's Information</h4>
+				<div class="right-sidebar-content-item">
+					<strong>Marker's name: </strong>
+					<p class="marker-name">Ganavo</p>
+				</div>
+				<div class="right-sidebar-content-item">
+					<strong>Type: </strong>
+					<p>G</p>
+				</div>
+			</div>
+			<div class="right-sidebar-secton">
+				<h4>Layer Infrastructure</h4>
+				<div class="right-sidebar-checkbox-group">
+					<div class="checkbox-wrapper-42">
+						<input id="cbx-42" type="checkbox" checked/>
+						<label class="cbx" for="cbx-42"></label>
+						<label class="lbl" for="cbx-42">Under</label>
+					</div>
+					<div class="checkbox-wrapper-42">
+						<input id="cbx-43" type="checkbox" />
+						<label class="cbx" for="cbx-43"></label>
+						<label class="lbl" for="cbx-43">PON</label>
+					</div>
+				</div>
+			</div>
+			<div class="right-sidebar-secton">
+				<h4>Layer Infrastructure</h4>
+				<div class="right-sidebar-checkbox-group">
+					<div class="checkbox-wrapper-42">
+						<input id="cbx-44" type="checkbox" checked/>
+						<label class="cbx" for="cbx-44"></label>
+						<label class="lbl" for="cbx-44">Under</label>
+					</div>
+					<div class="checkbox-wrapper-42">
+						<input id="cbx-45" type="checkbox" />
+						<label class="cbx" for="cbx-45"></label>
+						<label class="lbl" for="cbx-45">PON</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<button class="button-88" role="button">Load Infrastructure</button>
+	</div>
 </div>
