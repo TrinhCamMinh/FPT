@@ -4,6 +4,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import { HttpClient } from '@angular/common/http';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 // import tinycolor from 'tinycolor2';
+import hull from 'hull.js';
 
 let map: google.maps.Map;
 let currentInfoWindow: any = null;
@@ -17,6 +18,14 @@ const tanks: Array<any> = [];
 const TilePines: Array<any> = [];
 const polylines1: Array<any> = [];
 const polylines2: Array<any> = [];
+
+let demo: Array<any> = [];
+let rectangle: any;
+const randomMarkers = [];
+let polygon: any;
+let polygonHull: Array<any> = [];
+let marker;
+let points: Array<any> = [];
 
 const loader = new Loader({
 	apiKey: environment.apiKey,
@@ -41,13 +50,72 @@ export class AppComponent implements OnInit {
 	drawingManager: any;
 
 	ngOnInit(): void {
-		// this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
-		// this.readFile('assets/HamBe_SG.csv', 'HamBe');
-		// this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
-		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
-		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
-		this.demo();
+		this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
+		this.readFile('assets/HamBe_SG.csv', 'HamBe');
+		this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
+		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
+		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
+		this.initLeftSideBar();
 
+		const button = document.querySelector('.random-btn');
+		button?.addEventListener('click', () => {
+			this.handleRandomMarker();
+		});
+
+		this.init();
+	}
+
+	initInforWindow = (instance: any, content?: string) => {
+		let defaultValue = false;
+		if (!content) {
+			content = `
+                <div><input type="checkbox" id="edit">Edit</div>
+                <div><input type="checkbox" id="remove">Remove</div>
+            `;
+			defaultValue = true;
+		}
+
+		if (currentInfoWindow) {
+			currentInfoWindow.close();
+		}
+
+		const infowindow = new google.maps.InfoWindow({
+			content,
+		});
+
+		infowindow.open(map, instance);
+		currentInfoWindow = infowindow;
+
+		infowindow.addListener('domready', () => {
+			//* check if content is equal to a default value
+			if (defaultValue) {
+				const editCheckbox = document.getElementById('edit');
+				const removeCheckbox = document.getElementById('remove');
+
+				if (instance.getDraggable()) {
+					editCheckbox?.setAttribute('checked', 'true');
+				} else {
+					editCheckbox?.removeAttribute('checked');
+				}
+
+				editCheckbox?.addEventListener('change', () => {
+					if (instance.getDraggable()) {
+						editCheckbox?.removeAttribute('checked');
+						instance.setDraggable(null);
+					} else {
+						editCheckbox.setAttribute('checked', 'true');
+						instance.setDraggable(true);
+					}
+				});
+
+				removeCheckbox?.addEventListener('change', () => {
+					instance.setMap(null);
+				});
+			}
+		});
+	};
+
+	initLeftSideBar = () => {
 		const sideBarItems = document.querySelectorAll('.sidebar-item');
 		const sideBarForm = document.querySelector('.sidebar-form-container');
 		const buttons = document.querySelectorAll('.button-5');
@@ -101,63 +169,16 @@ export class AppComponent implements OnInit {
 				}
 			});
 		});
-	}
-
-	private initInforWindow = (instance: any, content?: string) => {
-		let defaultValue = false;
-		if (!content) {
-			content = `
-                <div><input type="checkbox" id="edit">Edit</div>
-                <div><input type="checkbox" id="remove">Remove</div>
-            `;
-			defaultValue = true;
-		}
-
-		if (currentInfoWindow) {
-			currentInfoWindow.close();
-		}
-
-		const infowindow = new google.maps.InfoWindow({
-			content,
-		});
-
-		infowindow.open(map, instance);
-		currentInfoWindow = infowindow;
-
-		infowindow.addListener('domready', () => {
-			//* check if content is equal to a default value
-			if (defaultValue) {
-				const editCheckbox = document.getElementById('edit');
-				const removeCheckbox = document.getElementById('remove');
-
-				if (instance.getDraggable()) {
-					editCheckbox?.setAttribute('checked', 'true');
-				} else {
-					editCheckbox?.removeAttribute('checked');
-				}
-
-				editCheckbox?.addEventListener('change', () => {
-					if (instance.getDraggable()) {
-						editCheckbox?.removeAttribute('checked');
-						instance.setDraggable(null);
-					} else {
-						editCheckbox.setAttribute('checked', 'true');
-						instance.setDraggable(true);
-					}
-				});
-
-				removeCheckbox?.addEventListener('change', () => {
-					instance.setMap(null);
-				});
-			}
-		});
 	};
 
-	private iniRightSideBar = (name: string) => {
+	iniRightSideBar = (name: string, type: string) => {
 		const markerName = document.querySelector('.marker-name');
+		const markerType = document.querySelector('.marker-type');
 		const rightSidebar = document.querySelector('.right-sidebar-container');
-		if (markerName) {
+
+		if (markerName && markerType) {
 			markerName.innerHTML = name;
+			markerType.innerHTML = type;
 			(rightSidebar as HTMLElement).style.display = 'flex';
 		}
 
@@ -172,6 +193,31 @@ export class AppComponent implements OnInit {
 		}
 	};
 
+	getRandom_marker(bounds: any) {
+		const leftBottom = [
+			bounds.getSouthWest().lat(),
+			bounds.getSouthWest().lng(),
+		];
+		const rightTop = [
+			bounds.getNorthEast().lat(),
+			bounds.getNorthEast().lng(),
+		];
+		const latlng = [
+			leftBottom[0] +
+				Math.floor(Math.random() * (rightTop[0] - leftBottom[0])),
+			leftBottom[1] +
+				Math.floor(Math.random() * (rightTop[1] - leftBottom[1])),
+		];
+		const marker = new google.maps.Marker({
+			position: new google.maps.LatLng(latlng[0], latlng[1]),
+			icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+			map,
+			title: 'Hello World',
+		});
+
+		return marker;
+	}
+
 	async readFile(fileURL: any = 'assets/Demo.csv', type: any = null) {
 		const data = await this.http
 			.get(fileURL, { responseType: 'text' })
@@ -183,6 +229,7 @@ export class AppComponent implements OnInit {
 				const lat = item.split(',')[2].replaceAll('"', ' ');
 				const lng = item.split(',')[3].replaceAll('"', ' ');
 				const name = item.split(',')[0].replaceAll('"', ' ');
+				const type = item.split(',')[1].replaceAll('"', ' ');
 
 				const marker = new google.maps.Marker({
 					position: {
@@ -209,7 +256,8 @@ export class AppComponent implements OnInit {
 				}
 
 				marker.addListener('click', () => {
-					this.initInforWindow(marker, `<strong>${name}</strong>`);
+					// this.initInforWindow(marker, `<strong>${name}</strong>`);
+					this.iniRightSideBar(name, type);
 				});
 
 				marker.addListener('rightclick', () => {
@@ -297,7 +345,7 @@ export class AppComponent implements OnInit {
 
 	//* Check if this position is in water or not by toggle this variable
 	//* if true then it will call the check water function
-	private handleWaterCheckBox = (event: any) => {
+	handleWaterCheckBox = (event: any) => {
 		if (event.target.checked) {
 			isOpenDetectWater = true;
 		} else {
@@ -305,7 +353,96 @@ export class AppComponent implements OnInit {
 		}
 	};
 
-	demo() {
+	handleRandomMarker() {
+		marker = this.getRandom_marker(rectangle.getBounds());
+
+		markers.push(marker);
+
+		randomMarkers.push({
+			lat: marker.getPosition()?.lat(),
+			lng: marker.getPosition()?.lng(),
+		});
+
+		markers.forEach((item) => {
+			points.push([item.getPosition().lat(), item.getPosition().lng()]);
+		});
+
+		if (demo) {
+			demo.length = 0;
+		}
+
+		if (polygonHull) {
+			polygonHull.length = 0;
+		}
+
+		if (polygon) {
+			polygon.setMap(null);
+		}
+
+		demo = hull(points, 40);
+
+		demo.forEach((item) => {
+			polygonHull.push({
+				lat: item[0],
+				lng: item[1],
+			});
+		});
+
+		polygon = new google.maps.Polygon({
+			paths: polygonHull,
+			strokeColor: '#FF0000',
+			strokeOpacity: 0.8,
+			strokeWeight: 2,
+			fillColor: '#FF0000',
+			fillOpacity: 0.35,
+		});
+
+		polygon.setMap(map);
+
+		// if (randomMarkers.length >= 3) {
+		// 	if (!polygon) {
+		// 		//create a new polygon
+		// 		polygon = new google.maps.Polygon({
+		// 			paths: randomMarkers,
+		// 			strokeColor: '#FF0000',
+		// 			strokeOpacity: 0.8,
+		// 			strokeWeight: 2,
+		// 			fillColor: '#FF0000',
+		// 			fillOpacity: 0.35,
+		// 		});
+
+		// 		polygon.setMap(map);
+		// 	} else {
+		// 		if (
+		// 			google.maps.geometry.poly.containsLocation(
+		// 				marker.getPosition(),
+		// 				polygon
+		// 			)
+		// 		) {
+		// 			// Marker is inside the polygon -- change to blue marker
+		// 			marker.setIcon(
+		// 				'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+		// 			);
+		// 		} else {
+		// 			//clear the old polygon
+		// 			polygon.setMap(null);
+		// 			//expand the polygon's bound
+		// 			polygon = new google.maps.Polygon({
+		// 				paths: randomMarkers,
+		// 				strokeColor: '#FF0000',
+		// 				strokeOpacity: 0.8,
+		// 				strokeWeight: 2,
+		// 				fillColor: '#FF0000',
+		// 				fillOpacity: 0.35,
+		// 			});
+
+		// 			polygon.setMap(map);
+		// 		}
+		// 	}
+		// }
+	}
+
+	init() {
 		loader.load().then(async () => {
 			//* initial map element
 			const { Map } = (await google.maps.importLibrary(
@@ -314,6 +451,7 @@ export class AppComponent implements OnInit {
 			map = new Map(document.getElementById('map') as HTMLElement, {
 				center: { lat: 15.9031, lng: 105.8067 },
 				zoom: 8,
+				mapTypeControl: false,
 			});
 
 			this.drawingManager = new google.maps.drawing.DrawingManager({
@@ -328,6 +466,30 @@ export class AppComponent implements OnInit {
 					zIndex: 1,
 				},
 			});
+
+			const trafficLayer = new google.maps.TrafficLayer();
+			const transitLayer = new google.maps.TransitLayer();
+			const bikeLayer = new google.maps.BicyclingLayer();
+
+			trafficLayer.setMap(map);
+			transitLayer.setMap(map);
+			bikeLayer.setMap(map);
+
+			rectangle = new google.maps.Rectangle({
+				strokeColor: '#FF0000',
+				strokeOpacity: 0.8,
+				strokeWeight: 2,
+				fillColor: '#FF0000',
+				fillOpacity: 0.35,
+				map,
+				bounds: {
+					north: 23.393395,
+					south: 8.559559,
+					east: 109.464211,
+					west: 102.144033,
+				},
+			});
+
 			this.drawingManager.setMap(map);
 		});
 	}
@@ -359,8 +521,6 @@ export class AppComponent implements OnInit {
 				return undefined;
 			}
 		}
-
-		const demo = this.iniRightSideBar;
 
 		this.drawingManager.setDrawingMode(
 			google.maps.drawing.OverlayType.MARKER
@@ -432,10 +592,6 @@ export class AppComponent implements OnInit {
 						}
 					});
 				}
-
-				marker.addListener('click', () => {
-					demo('MINHCT');
-				});
 
 				marker.addListener('rightclick', () => {
 					if (currentInfoWindow) {
@@ -821,34 +977,13 @@ export class AppComponent implements OnInit {
 
 	handleToggleTiles = (event: any) => {
 		const checkBox = event.target;
-		// if (checkBox.checked) {
-		// 	this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
-		// } else {
-		//* make the marker become invisible
-		// 	TilePines.forEach((item) => item.setVisible(false));
-
-		//* Deletes all markers in the array by removing references to them.
-		// 	TilePines.length = 0;
-		// 	checkBox.removeAttribute('checked');
-		// }
-
-		//! Demo only here
-		// if (!checkBox.checked) {
-		// 	polylines1.forEach((item) =>
-		// 		item.setOptions({ strokeColor: 'blue' })
-		// 	);
-		// 	light1 = true;
-		// } else {
-		// 	polylines1.forEach((item) =>
-		// 		item.setOptions({ strokeColor: 'red' })
-		// 	);
-		// 	checkBox.removeAttribute('checked');
-		// 	light1 = false;
-		// }
-
-		// if (light1 === light2) {
-		// 	alert('error');
-		// }
+		if (checkBox.checked) {
+			this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
+		} else {
+			TilePines.forEach((item) => item.setVisible(false));
+			TilePines.length = 0;
+			checkBox.removeAttribute('checked');
+		}
 	};
 
 	handleChangePolylineColor = (event: any) => {

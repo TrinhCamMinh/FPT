@@ -5,6 +5,13 @@
 	width: 100%;
 }
 
+.selector-control {
+	font-size: 14px;
+	line-height: 30px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
 * {
 	margin: 0;
 	padding: 0;
@@ -203,10 +210,10 @@ body {
 
 .right-sidebar-checkbox-group {
 	display: flex;
-	gap: 2rem
+	gap: 2rem;
 }
 
-.checkbox-wrapper-42 input[type= "checkbox"] {
+.checkbox-wrapper-42 input[type="checkbox"] {
 	display: none;
 	visibility: hidden;
 }
