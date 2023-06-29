@@ -21,7 +21,10 @@ const polylines2: Array<any> = [];
 
 let demo: Array<any> = [];
 let rectangle: any;
-const randomMarkers = [];
+let randomMarkers = [];
+let randomTanksMarkers: Array<any> = [];
+let randomGanivoMarkers: Array<any> = [];
+let randomTIlesMarkers: Array<any> = [];
 let polygon: any;
 let polygonHull: Array<any> = [];
 let marker;
@@ -50,18 +53,12 @@ export class AppComponent implements OnInit {
 	drawingManager: any;
 
 	ngOnInit(): void {
-		this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
-		this.readFile('assets/HamBe_SG.csv', 'HamBe');
-		this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
-		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
-		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
+		// this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
+		// this.readFile('assets/HamBe_SG.csv', 'HamBe');
+		// this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
+		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
+		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
 		this.initLeftSideBar();
-
-		const button = document.querySelector('.random-btn');
-		button?.addEventListener('click', () => {
-			this.handleRandomMarker();
-		});
-
 		this.init();
 	}
 
@@ -119,6 +116,7 @@ export class AppComponent implements OnInit {
 		const sideBarItems = document.querySelectorAll('.sidebar-item');
 		const sideBarForm = document.querySelector('.sidebar-form-container');
 		const buttons = document.querySelectorAll('.button-5');
+		const randomBtn = document.createElement('button');
 		const sideBarFormContentItemContainer = document.querySelector(
 			'.sidebar-form-content-item-container'
 		);
@@ -158,13 +156,88 @@ export class AppComponent implements OnInit {
 					).style.display = 'none';
 					isShow = false;
 				}
+
+				if (isShow === false) {
+					randomBtn.remove();
+				}
+
 				if (imageContainer) {
-					//TODO: append more text content (Ganivo, Tiles Piniline)
 					if (text.trim() === 'Tanks') {
-						//TODO: replace the icon with our own
+						randomBtn.textContent = 'Demo Tank Button';
+
 						imageContainer.innerHTML = `
-						<img width="50" height="50" src="https://img.icons8.com/ios/50/internet--v1.png" alt="internet--v1"/>
-`;
+							<img width="24" height="24" src="/assets/images/tank1.png" alt="tank--v1"/>
+							<img width="24" height="24" src="/assets/images/tank2.png" alt="tank--v2"/>
+						`;
+						imageContainer.after(randomBtn);
+
+						//! catch click event on append change icon
+						document.addEventListener('click', (event: any) => {
+							if (event.target.matches('img')) {
+								if (event.target.alt === 'tank--v1') {
+									this.handleChangeTankIcon(1);
+								}
+
+								if (event.target.alt === 'tank--v2') {
+									this.handleChangeTankIcon(2);
+								}
+							}
+						});
+
+						randomBtn?.addEventListener('click', () => {
+							this.handleRandomMarker('Tanks');
+						});
+					}
+
+					if (text.trim() === 'Ganivo') {
+						randomBtn.textContent = 'Demo Ganivo Button';
+
+						imageContainer.innerHTML = `
+							<img width="24" height="24" src="/assets/images/ganivo1.png" alt="ganivo--v1"/>
+							<img width="24" height="24" src="/assets/images/ganivo2.png" alt="ganivo--v2"/>
+						`;
+
+						imageContainer.after(randomBtn);
+
+						//! catch click event on append change icon
+						document.addEventListener('click', (event: any) => {
+							if (event.target.matches('img')) {
+								if (event.target.alt === 'ganivo--v1') {
+									this.handleChangeGanivoIcon(1);
+								}
+
+								if (event.target.alt === 'ganivo--v2') {
+									this.handleChangeGanivoIcon(2);
+								}
+							}
+						});
+
+						randomBtn?.addEventListener('click', () => {
+							this.handleRandomMarker('Ganivo');
+						});
+					}
+
+					if (text.trim() === 'Tiles Piline') {
+						randomBtn.textContent = 'Demo Tiles Button';
+
+						imageContainer.innerHTML = `
+							<img width="24" height="24" src="/assets/images/tiles.png" alt="tiles--v1"/>
+						`;
+
+						imageContainer.after(randomBtn);
+
+						//! catch click event on append change icon
+						document.addEventListener('click', (event: any) => {
+							if (event.target.matches('img')) {
+								if (event.target.alt === 'tiles--v1') {
+									this.handleChangeTilePineIcon(1);
+								}
+							}
+						});
+
+						randomBtn?.addEventListener('click', () => {
+							this.handleRandomMarker('Tiles Piline');
+						});
 					}
 				}
 			});
@@ -218,13 +291,17 @@ export class AppComponent implements OnInit {
 		return marker;
 	}
 
-	async readFile(fileURL: any = 'assets/Demo.csv', type: any = null) {
+	async readFile(fileURL: any = 'assets/Demo.csv', instance: any = null) {
 		const data = await this.http
 			.get(fileURL, { responseType: 'text' })
 			.toPromise();
 		const result = data?.split('\n');
 
-		if (type === 'Ganivo' || type === 'HamBe' || type === 'OngNgoi') {
+		if (
+			instance === 'Ganivo' ||
+			instance === 'HamBe' ||
+			instance === 'OngNgoi'
+		) {
 			const markers = result?.map((item: any, index: number) => {
 				const lat = item.split(',')[2].replaceAll('"', ' ');
 				const lng = item.split(',')[3].replaceAll('"', ' ');
@@ -240,17 +317,18 @@ export class AppComponent implements OnInit {
 					title: `Item index ${index}`,
 				});
 
-				if (type === 'Ganivo') {
+				if (instance === 'Ganivo') {
+					console.log('here 2');
 					marker.setIcon('/assets/images/ganivo1.png');
 					ganivos.push(marker);
 				}
 
-				if (type === 'HamBe') {
+				if (instance === 'HamBe') {
 					marker.setIcon('/assets/images/tank1.png');
 					tanks.push(marker);
 				}
 
-				if (type === 'OngNgoi') {
+				if (instance === 'OngNgoi') {
 					marker.setIcon('/assets/images/tiles.png');
 					TilePines.push(marker);
 				}
@@ -270,7 +348,7 @@ export class AppComponent implements OnInit {
 			new MarkerClusterer({ markers, map });
 		}
 
-		if (type === 'DoanOngNgam') {
+		if (instance === 'DoanOngNgam') {
 			result?.map((item: any) => {
 				const nums = item.split(',')[2].match(/\d+(.\d+)?/g);
 				const name = item.split(',')[0];
@@ -294,8 +372,30 @@ export class AppComponent implements OnInit {
 					geodesic: true,
 					strokeColor: '#FF0000',
 					strokeOpacity: 1.0,
-					strokeWeight: 6,
+					strokeWeight: 2,
+					icons: [
+						{
+							icon: {
+								path: 'M 0,-1 0,1',
+								strokeOpacity: 1,
+								scale: 4,
+							},
+							offset: '0',
+							repeat: '20px',
+						},
+					],
 				});
+
+				let count = 0;
+				window.setInterval(() => {
+					count = (count + 1) % 200;
+
+					const icons = polyline.get(
+						'icons'
+					) as google.maps.IconSequence[];
+					icons[0].offset = `${count / 2}%`;
+					polyline.set('icons', icons);
+				}, 20);
 
 				polyline.addListener('mouseover', () => {
 					map.getDiv().setAttribute('title', `${name}`);
@@ -306,7 +406,7 @@ export class AppComponent implements OnInit {
 			});
 		}
 
-		if (type === 'DoanOngNgamMang') {
+		if (instance === 'DoanOngNgamMang') {
 			result?.map((item: any) => {
 				const nums = item.split(',')[2].match(/\d+(.\d+)?/g);
 				const name = item.split(',')[0];
@@ -353,8 +453,23 @@ export class AppComponent implements OnInit {
 		}
 	};
 
-	handleRandomMarker() {
+	handleRandomMarker(instance: string) {
 		marker = this.getRandom_marker(rectangle.getBounds());
+
+		if (instance === 'Tanks') {
+			randomTanksMarkers.push(marker);
+			marker.setIcon('/assets/images/tank1.png');
+		}
+
+		if (instance === 'Ganivo') {
+			randomGanivoMarkers.push(marker);
+			marker.setIcon('/assets/images/ganivo1.png');
+		}
+
+		if (instance === 'Tiles Piline') {
+			randomTIlesMarkers.push(marker);
+			marker.setIcon('/assets/images/tiles.png');
+		}
 
 		markers.push(marker);
 
@@ -451,7 +566,7 @@ export class AppComponent implements OnInit {
 			map = new Map(document.getElementById('map') as HTMLElement, {
 				center: { lat: 15.9031, lng: 105.8067 },
 				zoom: 8,
-				mapTypeControl: false,
+				mapTypeControl: true,
 			});
 
 			this.drawingManager = new google.maps.drawing.DrawingManager({
@@ -467,14 +582,6 @@ export class AppComponent implements OnInit {
 				},
 			});
 
-			const trafficLayer = new google.maps.TrafficLayer();
-			const transitLayer = new google.maps.TransitLayer();
-			const bikeLayer = new google.maps.BicyclingLayer();
-
-			trafficLayer.setMap(map);
-			transitLayer.setMap(map);
-			bikeLayer.setMap(map);
-
 			rectangle = new google.maps.Rectangle({
 				strokeColor: '#FF0000',
 				strokeOpacity: 0.8,
@@ -489,7 +596,6 @@ export class AppComponent implements OnInit {
 					west: 102.144033,
 				},
 			});
-
 			this.drawingManager.setMap(map);
 		});
 	}
@@ -916,10 +1022,18 @@ export class AppComponent implements OnInit {
 			ganivos.forEach((item) => {
 				item.setIcon('/assets/images/ganivo1.png');
 			});
+
+			randomGanivoMarkers.forEach((item) => {
+				item.setIcon('/assets/images/ganivo1.png');
+			});
 		}
 
 		if (type === 2) {
 			ganivos.forEach((item) => {
+				item.setIcon('/assets/images/ganivo2.png');
+			});
+
+			randomGanivoMarkers.forEach((item) => {
 				item.setIcon('/assets/images/ganivo2.png');
 			});
 		}
@@ -930,6 +1044,10 @@ export class AppComponent implements OnInit {
 			TilePines.forEach((item) => {
 				item.setIcon('/assets/images/tiles.png');
 			});
+
+			randomTIlesMarkers.forEach((item) => {
+				item.setIcon('/assets/images/tiles.png');
+			});
 		}
 	};
 
@@ -938,10 +1056,18 @@ export class AppComponent implements OnInit {
 			tanks.forEach((item) => {
 				item.setIcon('/assets/images/tank1.png');
 			});
+
+			randomTanksMarkers.forEach((item) => {
+				item.setIcon('/assets/images/tank1.png');
+			});
 		}
 
 		if (type === 2) {
 			tanks.forEach((item) => {
+				item.setIcon('/assets/images/tank2.png');
+			});
+
+			randomTanksMarkers.forEach((item) => {
 				item.setIcon('/assets/images/tank2.png');
 			});
 		}
