@@ -125,13 +125,17 @@ export class AppComponent implements OnInit {
 			let isOpen = false;
 
 			item.addEventListener('click', () => {
+				const text = item.textContent;
+				console.log(text)
 				if (sideBarForm) {
-					if (!isOpen) {
-						(sideBarForm as HTMLElement).style.display = 'flex';
-						isOpen = true;
-					} else {
-						(sideBarForm as HTMLElement).style.display = 'none';
-						isOpen = false;
+					if (text === 'Underground infrastructure map') {
+						if (!isOpen) {
+							(sideBarForm as HTMLElement).style.display = 'flex';
+							isOpen = true;
+						} else {
+							(sideBarForm as HTMLElement).style.display = 'none';
+							isOpen = false;
+						}
 					}
 				}
 			});
