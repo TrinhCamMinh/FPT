@@ -53,11 +53,11 @@ export class AppComponent implements OnInit {
 	drawingManager: any;
 
 	ngOnInit(): void {
-		// this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
-		// this.readFile('assets/HamBe_SG.csv', 'HamBe');
-		// this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
-		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
-		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
+		this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
+		this.readFile('assets/HamBe_SG.csv', 'HamBe');
+		this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
+		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
+		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
 		this.initLeftSideBar();
 		this.init();
 	}
@@ -114,26 +114,49 @@ export class AppComponent implements OnInit {
 
 	initLeftSideBar = () => {
 		const sideBarItems = document.querySelectorAll('.sidebar-item');
-		const sideBarForm = document.querySelector('.sidebar-form-container');
-		const buttons = document.querySelectorAll('.button-5');
+		const sideBarForm1 = document.querySelector(
+			'#sidebar-form-container-1'
+		);
+		const sideBarForm2 = document.querySelector(
+			'#sidebar-form-container-2'
+		);
+		const buttonsForm1 = document.querySelectorAll('#button-form-1');
+		const buttonsForm2 = document.querySelectorAll('#button-form-2');
 		const randomBtn = document.createElement('button');
-		const sideBarFormContentItemContainer = document.querySelector(
-			'.sidebar-form-content-item-container'
+		const sideBarFormContentItemContainer1 = document.querySelector(
+			'#sidebar-form-content-item-container-1'
 		);
 
-		sideBarItems.forEach((item) => {
-			let isOpen = false;
+		const sideBarFormContentItemContainer2 = document.querySelector(
+			'#sidebar-form-content-item-container-2'
+		);
+		let isOpen = false;
 
+		sideBarItems.forEach((item) => {
 			item.addEventListener('click', () => {
 				const text = item.textContent;
-				console.log(text)
-				if (sideBarForm) {
-					if (text === 'Underground infrastructure map') {
+
+				if (sideBarForm1 || sideBarForm2) {
+					if (text?.trim() === 'Underground infrastructure map') {
 						if (!isOpen) {
-							(sideBarForm as HTMLElement).style.display = 'flex';
+							(sideBarForm1 as HTMLElement).style.display =
+								'flex';
 							isOpen = true;
 						} else {
-							(sideBarForm as HTMLElement).style.display = 'none';
+							(sideBarForm1 as HTMLElement).style.display =
+								'none';
+							isOpen = false;
+						}
+					}
+
+					if (text?.trim() === 'Drawing') {
+						if (!isOpen) {
+							(sideBarForm2 as HTMLElement).style.display =
+								'flex';
+							isOpen = true;
+						} else {
+							(sideBarForm2 as HTMLElement).style.display =
+								'none';
 							isOpen = false;
 						}
 					}
@@ -141,7 +164,7 @@ export class AppComponent implements OnInit {
 			});
 		});
 
-		buttons.forEach((item) => {
+		buttonsForm1.forEach((item) => {
 			let isShow = false;
 			const text = (item as HTMLElement).innerText;
 			const imageContainer = document.querySelector(
@@ -149,14 +172,14 @@ export class AppComponent implements OnInit {
 			);
 
 			item.addEventListener('click', () => {
-				if (!isShow && sideBarFormContentItemContainer) {
+				if (!isShow && sideBarFormContentItemContainer1) {
 					(
-						sideBarFormContentItemContainer as HTMLElement
+						sideBarFormContentItemContainer1 as HTMLElement
 					).style.display = 'flex';
 					isShow = true;
-				} else if (sideBarFormContentItemContainer) {
+				} else if (sideBarFormContentItemContainer1) {
 					(
-						sideBarFormContentItemContainer as HTMLElement
+						sideBarFormContentItemContainer1 as HTMLElement
 					).style.display = 'none';
 					isShow = false;
 				}
@@ -243,6 +266,25 @@ export class AppComponent implements OnInit {
 							this.handleRandomMarker('Tiles Piline');
 						});
 					}
+				}
+			});
+		});
+
+		buttonsForm2.forEach((item) => {
+			let isShow = false;
+
+			item.addEventListener('click', () => {
+				console.log('clicking form 2');
+				if (!isShow && sideBarFormContentItemContainer2) {
+					(
+						sideBarFormContentItemContainer2 as HTMLElement
+					).style.display = 'flex';
+					isShow = true;
+				} else if (sideBarFormContentItemContainer2) {
+					(
+						sideBarFormContentItemContainer2 as HTMLElement
+					).style.display = 'none';
+					isShow = false;
 				}
 			});
 		});
@@ -338,7 +380,6 @@ export class AppComponent implements OnInit {
 				}
 
 				marker.addListener('click', () => {
-					// this.initInforWindow(marker, `<strong>${name}</strong>`);
 					this.iniRightSideBar(name, type);
 				});
 
@@ -377,29 +418,29 @@ export class AppComponent implements OnInit {
 					strokeColor: '#FF0000',
 					strokeOpacity: 1.0,
 					strokeWeight: 2,
-					icons: [
-						{
-							icon: {
-								path: 'M 0,-1 0,1',
-								strokeOpacity: 1,
-								scale: 4,
-							},
-							offset: '0',
-							repeat: '20px',
-						},
-					],
+					// icons: [
+					// 	{
+					// 		icon: {
+					// 			path: 'M 0,-1 0,1',
+					// 			strokeOpacity: 1,
+					// 			scale: 4,
+					// 		},
+					// 		offset: '0',
+					// 		repeat: '20px',
+					// 	},
+					// ],
 				});
 
-				let count = 0;
-				window.setInterval(() => {
-					count = (count + 1) % 200;
+				// let count = 0;
+				// window.setInterval(() => {
+				// 	count = (count + 1) % 200;
 
-					const icons = polyline.get(
-						'icons'
-					) as google.maps.IconSequence[];
-					icons[0].offset = `${count / 2}%`;
-					polyline.set('icons', icons);
-				}, 20);
+				// 	const icons = polyline.get(
+				// 		'icons'
+				// 	) as google.maps.IconSequence[];
+				// 	icons[0].offset = `${count / 2}%`;
+				// 	polyline.set('icons', icons);
+				// }, 20);
 
 				polyline.addListener('mouseover', () => {
 					map.getDiv().setAttribute('title', `${name}`);
@@ -586,20 +627,20 @@ export class AppComponent implements OnInit {
 				},
 			});
 
-			rectangle = new google.maps.Rectangle({
-				strokeColor: '#FF0000',
-				strokeOpacity: 0.8,
-				strokeWeight: 2,
-				fillColor: '#FF0000',
-				fillOpacity: 0.35,
-				map,
-				bounds: {
-					north: 23.393395,
-					south: 8.559559,
-					east: 109.464211,
-					west: 102.144033,
-				},
-			});
+			// rectangle = new google.maps.Rectangle({
+			// 	strokeColor: '#FF0000',
+			// 	strokeOpacity: 0.8,
+			// 	strokeWeight: 2,
+			// 	fillColor: '#FF0000',
+			// 	fillOpacity: 0.35,
+			// 	map,
+			// 	bounds: {
+			// 		north: 23.393395,
+			// 		south: 8.559559,
+			// 		east: 109.464211,
+			// 		west: 102.144033,
+			// 	},
+			// });
 			this.drawingManager.setMap(map);
 		});
 	}
@@ -1124,5 +1165,22 @@ export class AppComponent implements OnInit {
 		// console.log(contrastRatio);
 
 		// if (contrastRatio <= 1) alert('error');
+	};
+
+	handleChangeInstances = (instance: string) => {
+		if (instance === 'marker') {
+			markers.forEach((item) => item.setMap(null));
+			markers.length = 0;
+		}
+
+		if (instance === 'circle') {
+			circles.forEach((item) => item.setMap(null));
+			circles.length = 0;
+		}
+
+		if (instance == 'rectangle') {
+			rectangles.forEach((item) => item.setMap(null));
+			rectangles.length = 0;
+		}
 	};
 }

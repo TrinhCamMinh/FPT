@@ -2,8 +2,8 @@
 	<div>
 		<aside class="sidebar-container">
 			<div class="sidebar-heading">
-				<p class="active" (click)="handleDrawMarkerClick()">ADSL</p>
-				<p (click)="handleDrawHandClick()">FFTH</p>
+				<p class="active">ADSL</p>
+				<p>FFTH</p>
 				<p>CATV</p>
 			</div>
 			<div class="sidebar-item-container">
@@ -19,15 +19,10 @@
 				<div class="sidebar-item">
 					<p>IMS</p>
 				</div>
-				<div class="sidebar-item">
-					<div class="checkbox-wrapper-2" style="display: flex; align-items: center; gap: 1rem;">
-						<label for="">Detect Water</label>
-						<input type="checkbox" class="sc-gJwTLC ikxBAC" />
-					</div>
-				</div>
+				<div class="sidebar-item">Drawing</div>
 			</div>
 
-			<div class="sidebar-form-container">
+			<div class="sidebar-form-container" id="sidebar-form-container-1">
 				<div class="sidebar-form-heading">
 					<p>Search Infrastructure</p>
 					<div class="close-minimize-button-group">
@@ -65,23 +60,96 @@
 					<div class="sidebar-form-content-item">
 						<strong> Markers </strong>
 						<div class="sidebar-form-content-button-group">
-							<button class="button-5" role="button">
-								Tanks
-							</button>
-							<button class="button-5" role="button">
-								Ganivo
-							</button>
-							<button class="button-5" role="button">
-								Tiles Piline
-							</button>
+							<div
+								style="
+									display: flex;
+									flex-direction: column;
+									gap: 1rem;
+								"
+							>
+								<button
+									class="button-5"
+									role="button"
+									id="button-form-1"
+								>
+									Tanks
+								</button>
+
+								<div class="checkbox-wrapper-63">
+									<label class="switch">
+										<input
+											type="checkbox"
+											checked
+											(change)="handleToggleTanks($event)"
+										/>
+										<span class="slider"></span>
+									</label>
+								</div>
+							</div>
+							<div
+								style="
+									display: flex;
+									flex-direction: column;
+									gap: 1rem;
+								"
+							>
+								<button
+									class="button-5"
+									role="button"
+									id="button-form-1"
+								>
+									Ganivo
+								</button>
+
+								<div class="checkbox-wrapper-63">
+									<label class="switch">
+										<input
+											type="checkbox"
+											checked
+											(change)="
+												handleToggleGanivo($event)
+											"
+										/>
+										<span class="slider"></span>
+									</label>
+								</div>
+							</div>
+							<div
+								style="
+									display: flex;
+									flex-direction: column;
+									gap: 1rem;
+								"
+							>
+								<button
+									class="button-5"
+									role="button"
+									id="button-form-1"
+								>
+									Tiles Piline
+								</button>
+
+								<div class="checkbox-wrapper-63">
+									<label class="switch">
+										<input
+											type="checkbox"
+											checked
+											(change)="handleToggleTiles($event)"
+										/>
+										<span class="slider"></span>
+									</label>
+								</div>
+							</div>
 						</div>
-						<div class="sidebar-form-content-item-container">
+						<div
+							class="sidebar-form-content-item-container"
+							id="sidebar-form-content-item-container-1"
+						>
 							<h3>Icons</h3>
 							<div class="sidebar-form-content-image-group">
 								<!--! JS will append content here -->
 							</div>
-
-							<!-- TODO: use JS after method to append random button   -->
+							<!-- ! use JS after method to append random button   -->
 						</div>
 					</div>
 					<div class="sidebar-form-content-item">
@@ -95,6 +163,164 @@
 							</button>
 							<button class="button-5" role="button">
 								Tanks
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="sidebar-form-container" id="sidebar-form-container-2">
+				<div class="sidebar-form-heading">
+					<p>Drawing Library</p>
+					<div class="close-minimize-button-group">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							height="1.25em"
+							viewBox="0 0 448 512"
+						>
+							<style>
+								svg {
+									fill: #005cfa;
+								}
+							</style>
+							<path
+								d="M432 256c0 17.7-14.3 32-32 32L48 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l352 0c17.7 0 32 14.3 32 32z"
+							/>
+						</svg>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							height="1.25em"
+							viewBox="0 0 384 512"
+						>
+							<style>
+								svg {
+									fill: #005cfa;
+								}
+							</style>
+							<path
+								d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+							/>
+						</svg>
+					</div>
+				</div>
+				<div class="sidebar-form-content-container">
+					<div class="sidebar-form-content-item">
+						<strong> Hand </strong>
+						<div class="sidebar-form-content-button-group">
+							<button
+								(click)="handleDrawHandClick()"
+								class="button-5"
+								role="button"
+							>
+								Draw
+							</button>
+						</div>
+					</div>
+					<div class="sidebar-form-content-item">
+						<strong> Markers </strong>
+						<div class="sidebar-form-content-button-group">
+							<button
+								(click)="handleDrawMarkerClick()"
+								class="button-5"
+								role="button"
+								id="button-form-2"
+							>
+								Draw
+							</button>
+							<button
+								class="button-5"
+								role="button"
+								(click)="handleChangeInstances('marker')"
+							>
+								Clear
+							</button>
+						</div>
+						<div
+							class="sidebar-form-content-item-container"
+							id="sidebar-form-content-item-container-2"
+						>
+							<div
+								class="checkbox-wrapper-2"
+								style="
+									display: flex;
+									align-items: center;
+									gap: 1rem;
+								"
+							>
+								<label>Detect Water</label>
+								<input
+									(change)="handleWaterCheckBox($event)"
+									type="checkbox"
+									class="sc-gJwTLC ikxBAC detect-water-checkbox"
+								/>
+							</div>
+						</div>
+					</div>
+					<div class="sidebar-form-content-item">
+						<strong> Circle </strong>
+						<div class="sidebar-form-content-button-group">
+							<button
+								(click)="handleDrawCircleClick()"
+								class="button-5"
+								role="button"
+							>
+								Draw
+							</button>
+							<button
+								class="button-5"
+								role="button"
+								(click)="handleChangeInstances('circle')"
+							>
+								Clear
+							</button>
+						</div>
+					</div>
+					<div class="sidebar-form-content-item">
+						<strong> Shape </strong>
+						<div class="sidebar-form-content-button-group">
+							<button
+								(click)="handleDrawShapeClick()"
+								class="button-5"
+								role="button"
+							>
+								Draw
+							</button>
+							<button class="button-5" role="button">
+								Clear
+							</button>
+						</div>
+					</div>
+					<div class="sidebar-form-content-item">
+						<strong> Lines </strong>
+						<div class="sidebar-form-content-button-group">
+							<button
+								(click)="handleDrawLineClick()"
+								class="button-5"
+								role="button"
+							>
+								Draw
+							</button>
+							<button class="button-5" role="button">
+								Clear
+							</button>
+						</div>
+					</div>
+					<div class="sidebar-form-content-item">
+						<strong> Rectangle </strong>
+						<div class="sidebar-form-content-button-group">
+							<button
+								(click)="handleDrawRectangleClick()"
+								class="button-5"
+								role="button"
+							>
+								Draw
+							</button>
+							<button
+								class="button-5"
+								role="button"
+								(click)="handleChangeInstances('rectangle')"
+							>
+								Clear
 							</button>
 						</div>
 					</div>
