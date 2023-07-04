@@ -5,6 +5,74 @@ import { HttpClient } from '@angular/common/http';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 // import tinycolor from 'tinycolor2';
 import hull from 'hull.js';
+import { PriorityQueue } from './priority-queue';
+
+const graph: Graph = {};
+
+const data = [
+	{
+		cableTypeP: 115492,
+		name: 'HCMP001.0258/CO',
+		headTypeP: 3158762,
+		headpoint: 'HCMP001.151/MO',
+		headlatlng: '(10.780988022597578,106.69645875692368)',
+		headtype: '4',
+		headspliter: 1,
+		color: '#9009E6',
+		method: 'Treo',
+		porttotall: null,
+		portused: null,
+		portfree: null,
+		code: 'HCMP001.0258/CO',
+		headporttotal: null,
+		headportused: null,
+		headportfree: null,
+		tailType: 1156422,
+		tailpoint: 'HCMP001.097/HB',
+		taillatlng: '10.780958979181227,106.69657684270419',
+		tailtype: '3',
+		tailporttotal: 16,
+		tailportused: 5,
+		tailportfree: 11,
+		cablelatlng:
+			'(10.780988022597578,106.69645875692368);(10.780914216393507,106.6965352341754);(10.780958979181227,106.69657684270419)',
+		headspliter1: 1,
+		tailspliter: 1,
+		cabtype: 2,
+		layer: 'hatang',
+	},
+	{
+		cableTypeP: 270282,
+		name: 'HCMP001.0261/CU',
+		headTypeP: 222392,
+		headpoint: 'HCMP001.104/HB',
+		headlatlng: '(10.779904431861624,106.69577814638615)',
+		headtype: '3',
+		headspliter: 1,
+		color: '#9009E6',
+		method: 'Ngầm',
+		porttotall: 16,
+		portused: 16,
+		portfree: 0,
+		code: 'HCMP001.0261/CU',
+		headporttotal: 16,
+		headportused: 16,
+		headportfree: 0,
+		tailType: 222412,
+		tailpoint: 'HCMP001.103/HB',
+		taillatlng: '10.779867543597708,106.69581301510334',
+		tailtype: '3',
+		tailporttotal: 8,
+		tailportused: 8,
+		tailportfree: 0,
+		cablelatlng:
+			'(10.779904431861624,106.69577814638615);10.779867543597708,106.69581301510334',
+		headspliter1: 1,
+		tailspliter: 1,
+		cabtype: 2,
+		layer: 'hatang',
+	},
+];
 
 let map: google.maps.Map;
 let currentInfoWindow: any = null;
@@ -55,10 +123,11 @@ export class AppComponent implements OnInit {
 	ngOnInit(): void {
 		this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
 		this.readFile('assets/HamBe_SG.csv', 'HamBe');
-		this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
-		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
-		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
+		// this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
+		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
+		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
 		this.initLeftSideBar();
+
 		this.init();
 	}
 
@@ -364,7 +433,7 @@ export class AppComponent implements OnInit {
 				});
 
 				if (instance === 'Ganivo') {
-					console.log('here 2');
+					
 					marker.setIcon('/assets/images/ganivo1.png');
 					ganivos.push(marker);
 				}
@@ -487,6 +556,134 @@ export class AppComponent implements OnInit {
 			});
 		}
 	}
+
+	dijkstra = (graph: any, start: any, end: any) => {
+		const distances: { [key: string]: number } = {};
+		const previous: { [key: string]: string | null } = {};
+		const pq = new PriorityQueue();
+
+		for (let vertex in graph) {
+			distances[vertex] = vertex === start ? 0 : Infinity;
+			pq.enqueue(vertex, distances[vertex]);
+			previous[vertex] = null;
+		}
+
+		while (!pq.isEmpty()) {
+			const currentVertex = pq.dequeue();
+
+			if (currentVertex === end) {
+				const path = [];
+				let current = end;
+
+				while (current !== null) {
+					path.unshift(current);
+					current = previous[current];
+				}
+
+				console.log(
+					`The shortest path between ${start} and ${end} is ${path.join(
+						' -- '
+					)} with a distance of ${distances[end]}`
+				);
+				return;
+			}
+
+			for (let neighbor in graph[currentVertex]) {
+				const distance = graph[currentVertex][neighbor];
+				const newPath = distances[currentVertex] + distance;
+
+				if (newPath < distances[neighbor]) {
+					distances[neighbor] = newPath;
+					previous[neighbor] = currentVertex;
+					pq.enqueue(neighbor, newPath);
+				}
+			}
+		}
+	};
+
+	drawGraph = () => {
+		console.log('draw function');
+		
+		const myLatLng = { lat: -25.363, lng: 131.044 };
+		const marker = new google.maps.Marker({
+			position: myLatLng,
+			icon: 'https://img.icons8.com/ios/50/internet--v1.png',
+			map,
+			title: 'Hello World!',
+		});
+
+		if(map) {
+			console.log('yup')
+		} else {
+			console.log('nope')
+		}
+
+		console.log(marker);
+
+		// data.forEach((item) => {
+		// 	const HeadName: string = item.headpoint;
+		// 	const HeadLat = Number(
+		// 		item.headlatlng.replace(/[()]/g, '').split(',')[0]
+		// 	);
+		// 	const HeadLng = Number(
+		// 		item.headlatlng.replace(/[()]/g, '').split(',')[1]
+		// 	);
+		// 	const TailName = item.tailpoint;
+		// 	const TailLat = Number(
+		// 		item.taillatlng.replace(/[()]/g, '').split(',')[0]
+		// 	);
+		// 	const TailLng = Number(
+		// 		item.taillatlng.replace(/[()]/g, '').split(',')[1]
+		// 	);
+
+		// 	const headMarker = new google.maps.Marker({
+		// 		position: {
+		// 			lat: Number(HeadLat),
+		// 			lng: Number(HeadLng),
+		// 		},
+		// 		map,
+		// 		title: HeadName,
+		// 	});
+
+		// 	const tailMarker = new google.maps.Marker({
+		// 		position: {
+		// 			lat: Number(TailLat),
+		// 			lng: Number(TailLng),
+		// 		},
+		// 		map,
+		// 		title: TailName,
+		// 	});
+
+		// 	const polyline = new google.maps.Polyline({
+		// 		path: [
+		// 			{
+		// 				lat: HeadLat,
+		// 				lng: HeadLng,
+		// 			},
+		// 			{
+		// 				lat: TailLat,
+		// 				lng: TailLng,
+		// 			},
+		// 		],
+		// 		geodesic: true,
+		// 		strokeColor: '#7666db',
+		// 		strokeOpacity: 1.0,
+		// 		strokeWeight: 4,
+		// 	});
+
+		// 	if (!graph[HeadName]) {
+		// 		graph[HeadName] = {};
+		// 	}
+
+		// 	if (!graph[TailName]) {
+		// 		graph[TailName] = {};
+		// 	}
+
+		// 	graph[HeadName][TailName] = item.tailporttotal;
+
+		// 	polyline.setMap(map);
+		// });
+	};
 
 	//* Check if this position is in water or not by toggle this variable
 	//* if true then it will call the check water function
@@ -1182,5 +1379,11 @@ export class AppComponent implements OnInit {
 			rectangles.forEach((item) => item.setMap(null));
 			rectangles.length = 0;
 		}
+	};
+}
+
+interface Graph {
+	[key: string]: {
+		[key: string]: number;
 	};
 }
