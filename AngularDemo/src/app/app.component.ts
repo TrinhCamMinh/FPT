@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { Graph } from './interfaces/graph';
 import { PriorityQueue } from './classes/priority-queue';
-import { styles } from './data/mock';
+import { styles, data } from './data/mock';
 import hull from 'hull.js';
 // import tinycolor from 'tinycolor2';
 
@@ -535,8 +535,6 @@ export class AppComponent implements OnInit {
 	};
 
 	drawGraph = () => {
-		console.log('draw function');
-
 		const myLatLng = { lat: -25.363, lng: 131.044 };
 		const marker = new google.maps.Marker({
 			position: myLatLng,
@@ -551,71 +549,69 @@ export class AppComponent implements OnInit {
 			console.log('nope');
 		}
 
-		console.log(marker);
+		data.forEach((item) => {
+			const HeadName: string = item.headpoint;
+			const HeadLat = Number(
+				item.headlatlng.replace(/[()]/g, '').split(',')[0]
+			);
+			const HeadLng = Number(
+				item.headlatlng.replace(/[()]/g, '').split(',')[1]
+			);
+			const TailName = item.tailpoint;
+			const TailLat = Number(
+				item.taillatlng.replace(/[()]/g, '').split(',')[0]
+			);
+			const TailLng = Number(
+				item.taillatlng.replace(/[()]/g, '').split(',')[1]
+			);
 
-		// data.forEach((item) => {
-		// 	const HeadName: string = item.headpoint;
-		// 	const HeadLat = Number(
-		// 		item.headlatlng.replace(/[()]/g, '').split(',')[0]
-		// 	);
-		// 	const HeadLng = Number(
-		// 		item.headlatlng.replace(/[()]/g, '').split(',')[1]
-		// 	);
-		// 	const TailName = item.tailpoint;
-		// 	const TailLat = Number(
-		// 		item.taillatlng.replace(/[()]/g, '').split(',')[0]
-		// 	);
-		// 	const TailLng = Number(
-		// 		item.taillatlng.replace(/[()]/g, '').split(',')[1]
-		// 	);
+			const headMarker = new google.maps.Marker({
+				position: {
+					lat: Number(HeadLat),
+					lng: Number(HeadLng),
+				},
+				map,
+				title: HeadName,
+			});
 
-		// 	const headMarker = new google.maps.Marker({
-		// 		position: {
-		// 			lat: Number(HeadLat),
-		// 			lng: Number(HeadLng),
-		// 		},
-		// 		map,
-		// 		title: HeadName,
-		// 	});
+			const tailMarker = new google.maps.Marker({
+				position: {
+					lat: Number(TailLat),
+					lng: Number(TailLng),
+				},
+				map,
+				title: TailName,
+			});
 
-		// 	const tailMarker = new google.maps.Marker({
-		// 		position: {
-		// 			lat: Number(TailLat),
-		// 			lng: Number(TailLng),
-		// 		},
-		// 		map,
-		// 		title: TailName,
-		// 	});
+			const polyline = new google.maps.Polyline({
+				path: [
+					{
+						lat: HeadLat,
+						lng: HeadLng,
+					},
+					{
+						lat: TailLat,
+						lng: TailLng,
+					},
+				],
+				geodesic: true,
+				strokeColor: '#7666db',
+				strokeOpacity: 1.0,
+				strokeWeight: 4,
+			});
 
-		// 	const polyline = new google.maps.Polyline({
-		// 		path: [
-		// 			{
-		// 				lat: HeadLat,
-		// 				lng: HeadLng,
-		// 			},
-		// 			{
-		// 				lat: TailLat,
-		// 				lng: TailLng,
-		// 			},
-		// 		],
-		// 		geodesic: true,
-		// 		strokeColor: '#7666db',
-		// 		strokeOpacity: 1.0,
-		// 		strokeWeight: 4,
-		// 	});
+			if (!graph[HeadName]) {
+				graph[HeadName] = {};
+			}
 
-		// 	if (!graph[HeadName]) {
-		// 		graph[HeadName] = {};
-		// 	}
+			if (!graph[TailName]) {
+				graph[TailName] = {};
+			}
 
-		// 	if (!graph[TailName]) {
-		// 		graph[TailName] = {};
-		// 	}
+			graph[HeadName][TailName] = item.tailporttotal;
 
-		// 	graph[HeadName][TailName] = item.tailporttotal;
-
-		// 	polyline.setMap(map);
-		// });
+			polyline.setMap(map);
+		});
 	};
 
 	//* Check if this position is in water or not by toggle this variable
