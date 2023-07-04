@@ -4,81 +4,16 @@ import { Loader } from '@googlemaps/js-api-loader';
 import { HttpClient } from '@angular/common/http';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
 import { Graph } from './interfaces/graph';
-// import tinycolor from 'tinycolor2';
-import hull from 'hull.js';
 import { PriorityQueue } from './classes/priority-queue';
-
-const graph: Graph = {};
-
-const data = [
-	{
-		cableTypeP: 115492,
-		name: 'HCMP001.0258/CO',
-		headTypeP: 3158762,
-		headpoint: 'HCMP001.151/MO',
-		headlatlng: '(10.780988022597578,106.69645875692368)',
-		headtype: '4',
-		headspliter: 1,
-		color: '#9009E6',
-		method: 'Treo',
-		porttotall: null,
-		portused: null,
-		portfree: null,
-		code: 'HCMP001.0258/CO',
-		headporttotal: null,
-		headportused: null,
-		headportfree: null,
-		tailType: 1156422,
-		tailpoint: 'HCMP001.097/HB',
-		taillatlng: '10.780958979181227,106.69657684270419',
-		tailtype: '3',
-		tailporttotal: 16,
-		tailportused: 5,
-		tailportfree: 11,
-		cablelatlng:
-			'(10.780988022597578,106.69645875692368);(10.780914216393507,106.6965352341754);(10.780958979181227,106.69657684270419)',
-		headspliter1: 1,
-		tailspliter: 1,
-		cabtype: 2,
-		layer: 'hatang',
-	},
-	{
-		cableTypeP: 270282,
-		name: 'HCMP001.0261/CU',
-		headTypeP: 222392,
-		headpoint: 'HCMP001.104/HB',
-		headlatlng: '(10.779904431861624,106.69577814638615)',
-		headtype: '3',
-		headspliter: 1,
-		color: '#9009E6',
-		method: 'Ngầm',
-		porttotall: 16,
-		portused: 16,
-		portfree: 0,
-		code: 'HCMP001.0261/CU',
-		headporttotal: 16,
-		headportused: 16,
-		headportfree: 0,
-		tailType: 222412,
-		tailpoint: 'HCMP001.103/HB',
-		taillatlng: '10.779867543597708,106.69581301510334',
-		tailtype: '3',
-		tailporttotal: 8,
-		tailportused: 8,
-		tailportfree: 0,
-		cablelatlng:
-			'(10.779904431861624,106.69577814638615);10.779867543597708,106.69581301510334',
-		headspliter1: 1,
-		tailspliter: 1,
-		cabtype: 2,
-		layer: 'hatang',
-	},
-];
+import { styles } from './data/mock';
+import hull from 'hull.js';
+// import tinycolor from 'tinycolor2';
 
 let map: google.maps.Map;
 let currentInfoWindow: any = null;
 let isOpenDetectWater: Boolean = false;
 
+const graph: Graph = {};
 const circles: Array<any> = [];
 const markers: Array<any> = [];
 const rectangles: Array<any> = [];
@@ -87,6 +22,10 @@ const tanks: Array<any> = [];
 const TilePines: Array<any> = [];
 const polylines1: Array<any> = [];
 const polylines2: Array<any> = [];
+const loader = new Loader({
+	apiKey: environment.apiKey,
+	version: 'weekly',
+});
 
 let demo: Array<any> = [];
 let rectangle: any;
@@ -98,11 +37,6 @@ let polygon: any;
 let polygonHull: Array<any> = [];
 let marker;
 let points: Array<any> = [];
-
-const loader = new Loader({
-	apiKey: environment.apiKey,
-	version: 'weekly',
-});
 
 @Component({
 	selector: 'app-root',
@@ -433,7 +367,6 @@ export class AppComponent implements OnInit {
 				});
 
 				if (instance === 'Ganivo') {
-					
 					marker.setIcon('/assets/images/ganivo1.png');
 					ganivos.push(marker);
 				}
@@ -603,7 +536,7 @@ export class AppComponent implements OnInit {
 
 	drawGraph = () => {
 		console.log('draw function');
-		
+
 		const myLatLng = { lat: -25.363, lng: 131.044 };
 		const marker = new google.maps.Marker({
 			position: myLatLng,
@@ -612,10 +545,10 @@ export class AppComponent implements OnInit {
 			title: 'Hello World!',
 		});
 
-		if(map) {
-			console.log('yup')
+		if (map) {
+			console.log('yup');
 		} else {
-			console.log('nope')
+			console.log('nope');
 		}
 
 		console.log(marker);
@@ -765,6 +698,26 @@ export class AppComponent implements OnInit {
 				center: { lat: 15.9031, lng: 105.8067 },
 				zoom: 8,
 				mapTypeControl: true,
+			});
+
+			// Add a style-selector control to the map.
+			const styleControl = document.getElementById(
+				'style-selector-control'
+			) as HTMLElement;
+			// Set the map's style to the initial value of the selector.
+			const styleSelector = document.getElementById(
+				'style-selector'
+			) as HTMLSelectElement;
+
+			map.controls[google.maps.ControlPosition.TOP_LEFT].push(
+				styleControl
+			);
+
+			map.setOptions({ styles: styles[styleSelector.value] });
+
+			// Apply new JSON when the user selects a different style.
+			styleSelector.addEventListener('change', () => {
+				map.setOptions({ styles: styles[styleSelector.value] });
 			});
 
 			this.drawingManager = new google.maps.drawing.DrawingManager({
@@ -1337,5 +1290,3 @@ export class AppComponent implements OnInit {
 		}
 	};
 }
-
-
