@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { Loader } from '@googlemaps/js-api-loader';
 import { HttpClient } from '@angular/common/http';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
+import { Graph } from './interfaces/graph';
 // import tinycolor from 'tinycolor2';
 import hull from 'hull.js';
-import { PriorityQueue } from './priority-queue';
+import { PriorityQueue } from './classes/priority-queue';
 
 const graph: Graph = {};
 
@@ -123,11 +124,10 @@ export class AppComponent implements OnInit {
 	ngOnInit(): void {
 		this.readFile('assets/GaniVo_SG.csv', 'Ganivo');
 		this.readFile('assets/HamBe_SG.csv', 'HamBe');
-		// this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
-		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
-		// this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
+		this.readFile('assets/OngNgoi_SG.csv', 'OngNgoi');
+		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgamMang');
+		this.readFile('assets/Doan_Ong_Ngam.csv', 'DoanOngNgam');
 		this.initLeftSideBar();
-
 		this.init();
 	}
 
@@ -697,6 +697,7 @@ export class AppComponent implements OnInit {
 
 	handleRandomMarker(instance: string) {
 		marker = this.getRandom_marker(rectangle.getBounds());
+		markers.push(marker);
 
 		if (instance === 'Tanks') {
 			randomTanksMarkers.push(marker);
@@ -712,8 +713,6 @@ export class AppComponent implements OnInit {
 			randomTIlesMarkers.push(marker);
 			marker.setIcon('/assets/images/tiles.png');
 		}
-
-		markers.push(marker);
 
 		randomMarkers.push({
 			lat: marker.getPosition()?.lat(),
@@ -753,50 +752,7 @@ export class AppComponent implements OnInit {
 			fillColor: '#FF0000',
 			fillOpacity: 0.35,
 		});
-
 		polygon.setMap(map);
-
-		// if (randomMarkers.length >= 3) {
-		// 	if (!polygon) {
-		// 		//create a new polygon
-		// 		polygon = new google.maps.Polygon({
-		// 			paths: randomMarkers,
-		// 			strokeColor: '#FF0000',
-		// 			strokeOpacity: 0.8,
-		// 			strokeWeight: 2,
-		// 			fillColor: '#FF0000',
-		// 			fillOpacity: 0.35,
-		// 		});
-
-		// 		polygon.setMap(map);
-		// 	} else {
-		// 		if (
-		// 			google.maps.geometry.poly.containsLocation(
-		// 				marker.getPosition(),
-		// 				polygon
-		// 			)
-		// 		) {
-		// 			// Marker is inside the polygon -- change to blue marker
-		// 			marker.setIcon(
-		// 				'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-		// 			);
-		// 		} else {
-		// 			//clear the old polygon
-		// 			polygon.setMap(null);
-		// 			//expand the polygon's bound
-		// 			polygon = new google.maps.Polygon({
-		// 				paths: randomMarkers,
-		// 				strokeColor: '#FF0000',
-		// 				strokeOpacity: 0.8,
-		// 				strokeWeight: 2,
-		// 				fillColor: '#FF0000',
-		// 				fillOpacity: 0.35,
-		// 			});
-
-		// 			polygon.setMap(map);
-		// 		}
-		// 	}
-		// }
 	}
 
 	init() {
@@ -1382,8 +1338,4 @@ export class AppComponent implements OnInit {
 	};
 }
 
-interface Graph {
-	[key: string]: {
-		[key: string]: number;
-	};
-}
+
